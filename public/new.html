@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Upload / Create File</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="container">
+<h1>Upload or Create a File</h1>
+
+<input type="text" id="userId" placeholder="User ID">
+<input type="text" id="filePath" placeholder="File name (example.txt)">
+<textarea id="contents" placeholder="File contents (leave blank for new file)"></textarea>
+
+<div id="apiKeyContainer">
+<input type="checkbox" id="useKey" onchange="toggleKey()"> Use API Key
+<input type="text" id="apiKeyField" placeholder="API Key" disabled>
+</div>
+
+<div style="display:flex; gap:10px; margin-top:10px;">
+<button onclick="uploadFile()" style="flex:1">Upload File</button>
+<button onclick="createFile()" style="flex:1">Make New File</button>
+</div>
+
+<div id="result" style="margin-top:20px;"></div>
+</div>
+
+<script>
+function toggleKey(){
+    document.getElementById("apiKeyField").disabled = !document.getElementById("useKey").checked;
+}
+
+function uploadFile(){
+    const userId = document.getElementById("userId").value;
+    const filePath = document.getElementById("filePath").value;
+    const contents = document.getElementById("contents").value;
+    const useKey = document.getElementById("useKey").checked;
+    sendFile(userId, filePath, contents, useKey);
+}
+
+function createFile(){
+    const userId = document.getElementById("userId").value;
+    const filePath = document.getElementById("filePath").value;
+    const useKey = document.getElementById("useKey").checked;
+    sendFile(userId, filePath, "", useKey);
+}
+
+function sendFile(userId, filePath, contents, useKey){
+    fetch(`/api/users`, {
+        method:"PUT",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({
+          userId: userId,
+          filePath: filePath,
+          key: useKey ? document.getElementById("apiKeyField").value : "",
+          newContents: contents
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
+        let html='';
+        if(useKey){
+            html+=`<label>Key:true</label>`;
+            html+=`<label>RAW text:</label><textarea readonly>${location.origin}/${userId}/${filePath}</textarea>`;
+            html+=`<label>API endpoint:</label><textarea readonly>${location.origin}/api/users</textarea>`;
+        } else {
+            html+=`<label>Key:false</label>`;
+            html+=`<label>RAW text:</label><textarea readonly>${location.origin}/${userId}/${filePath}</textarea>`;
+        }
+        document.getElementById("result").innerHTML = html;
+    });
+}
+</script>
+</body>
+</html>
