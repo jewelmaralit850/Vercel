@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>RawTXT Maker</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="container">
+<h1>RawTXT Maker</h1>
+<p>Upload or create raw text files: <a href="/new.html">New Upload</a></p>
+
+<h2>Example Python Usage:</h2>
+<pre>
+import requests
+url = "https://rawtxt-maker.vercel.app/api/users"
+data = {
+  "userId": "user1",
+  "filePath": "example.txt",
+  "key": "example-91728jekj-91819",
+  "newContents": "print('Hello from API')"
+}
+res = requests.put(url, json=data)
+print(res.json())
+</pre>
+
+<button onclick="window.location='/new.html'">Upload New File</button>
+</div>
+</body>
+</html>
